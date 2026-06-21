@@ -2,7 +2,7 @@
   "name": "What to Eat",
   "short_name": "WhatToEat",
   "description": "冰箱食材管理 + 菜谱推荐",
-  "start_url": "WhatToEat.html",
+  "start_url": ".",
   "scope": ".",
   "display": "standalone",
   "orientation": "portrait",

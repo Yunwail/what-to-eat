@@ -1,6 +1,6 @@
 const CACHE_NAME = 'what-to-eat-v1';
 const ASSETS = [
-  'WhatToEat.html',
+  'index.html',
   'manifest.json'
 ];
 
@@ -32,7 +32,7 @@ self.addEventListener('fetch', event => {
         return response;
       });
     }).catch(() => {
-      return caches.match('WhatToEat.html');
+      return caches.match('index.html');
     })
   );
 });
