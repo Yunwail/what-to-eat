@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>What to Eat</title>
 <link rel="manifest" href="manifest.json">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -14,7 +14,8 @@
 *{margin:0;padding:0;box-sizing:border-box}
 :root{--bg-page:#FAF6EE;--bg-phone:#FAF6EE;--bg-panel:#FFFFFF;--bg-cream:#FAF6EE;--bg-warm:#F3CEE2;--accent:#111111;--sage:#BACB9A;--pink:#F3CEE2;--yellow:#FCE291;--blue:#C5D5E6;--text-dark:#111111;--text-mid:#555555;--text-light:#999999;--divider:#F0EDEA;--white:#FFFFFF;--charcoal:#111111;--danger:#E8762D}
 body{background:#E8E0D0;display:flex;justify-content:center;align-items:center;min-height:100vh;font-family:"Inter","PingFang SC","Helvetica Neue",sans-serif}
-.phone{width:100%;max-width:420px;height:100vh;max-height:900px;background:var(--bg-page);position:relative;display:flex;flex-direction:column;box-shadow:0 0 0 2px #E0D5CC,0 0 0 6px #FFF8F5,0 0 0 8px #E0D5CC,0 20px 60px rgba(0,0,0,0.08);overflow:hidden}
+.phone{width:100%;max-width:420px;min-height:100vh;background:var(--bg-page);position:relative;display:flex;flex-direction:column;overflow:hidden;margin:0 auto}
+@media(display-mode:standalone){.phone{max-width:100%;box-shadow:none;min-height:100vh}body{background:var(--bg-page)}}
 .screen-container{flex:1;position:relative;overflow:hidden;min-height:0}
 .screen{display:none;flex-direction:column;height:100%;position:absolute;top:0;left:0;right:0;opacity:0;transform:translateY(16px);transition:opacity 0.28s cubic-bezier(0.16,1,0.3,1),transform 0.28s cubic-bezier(0.16,1,0.3,1);pointer-events:none}
 .screen.active{opacity:1;transform:translateY(0);pointer-events:auto;display:flex;z-index:2}
@@ -899,8 +900,8 @@ function renderShelf(name){
   });
 }
 function renderAllShelves(){['fresh','freezer','storage'].forEach(n=>renderShelf(n));}
-function addItem(name,emoji,zone,qty,unit){const d=new Date();d.setDate(d.getDate()+5+Math.floor(Math.random()*7));ingredients.push({id:nextId++,n:name,e:emoji,z:zone,q:qty,u:unit,exp:d.toISOString().slice(0,10)});renderAllShelves();}
-function removeItem(id){const i=ingredients.find(x=>x.id===id);if(!i)return;if(!confirm('要处理掉 '+i.n+' 吗？'))return;ingredients=ingredients.filter(x=>x.id!==id);renderAllShelves();}
+function addItem(name,emoji,zone,qty,unit){const d=new Date();d.setDate(d.getDate()+5+Math.floor(Math.random()*7));ingredients.push({id:nextId++,n:name,e:emoji,z:zone,q:qty,u:unit,exp:d.toISOString().slice(0,10)});saveData();renderAllShelves();}
+function removeItem(id){const i=ingredients.find(x=>x.id===id);if(!i)return;if(!confirm('要处理掉 '+i.n+' 吗？'))return;ingredients=ingredients.filter(x=>x.id!==id);saveData();renderAllShelves();}
 
 function renderIngSelector(){
   const grid=document.getElementById('ing-grid');grid.innerHTML='';
@@ -1015,6 +1016,7 @@ function showDetail(id){
 function checkin(name,cal){
   const t=new Date();const h=String(t.getHours()).padStart(2,'0')+':'+String(t.getMinutes()).padStart(2,'0');
   mealRecords.push({id:Date.now(),date:new Date().toISOString().slice(0,10),recipeName:name,calories:cal,time:h});
+  saveData();
   alert('🎉 太棒啦！\n已记录：「'+name+'」'+cal+'大卡\n继续好好吃饭哦 ✨');
   renderRecords();updateProfile();
   showScreen('screen-records');
@@ -1037,6 +1039,18 @@ function toggleHate(name){
   const i=hatedIngredients.indexOf(name);
   if(i>-1){hatedIngredients.splice(i,1);}else{hatedIngredients.push(name);}
   localStorage.setItem('wte_hated',JSON.stringify(hatedIngredients));
+}
+
+// Data persistence
+function saveData(){
+  localStorage.setItem('wte_ingredients',JSON.stringify(ingredients));
+  localStorage.setItem('wte_mealRecords',JSON.stringify(mealRecords));
+}
+function loadSavedData(){
+  const ing=localStorage.getItem('wte_ingredients');
+  if(ing){try{ingredients=JSON.parse(ing);}catch(e){}}
+  const meals=localStorage.getItem('wte_mealRecords');
+  if(meals){try{mealRecords=JSON.parse(meals);}catch(e){}}
   updateProfile();
 }
 function showHateSheet(r){
@@ -1262,9 +1276,27 @@ function updateProfile(){
 }
 
 // LOGIN
+const savedNick = localStorage.getItem('wte_nickname');
+const savedHasData = localStorage.getItem('wte_ingredients');
+
+// Auto-login if returning user
+if(savedNick && savedHasData){
+  loadSavedData();
+  document.getElementById('screen-login').classList.add('hidden');
+  document.getElementById('screen-home').classList.add('active');
+  document.getElementById('screen-home').style.display='flex';
+  document.getElementById('tab-home').classList.add('active');
+  loggedIn=true;
+  document.getElementById('pf-name').textContent=savedNick;
+  currentScreen='screen-home';
+  loadProfileSettings();
+  renderAllShelves();
+}
+
 document.getElementById('login-btn').addEventListener('click',function(){
   const name=document.getElementById('login-input').value.trim();
   if(!name){alert('请输入昵称哦！');return;}
+  localStorage.setItem('wte_nickname',name.trim());
   document.getElementById('screen-login').classList.add('hidden');
   document.getElementById('screen-home').classList.add('active');
   document.getElementById('screen-home').style.display='flex';
@@ -1272,6 +1304,7 @@ document.getElementById('login-btn').addEventListener('click',function(){
   loggedIn=true;
   document.getElementById('pf-name').textContent=name;
     currentScreen='screen-home';
+  loadSavedData();
   renderAllShelves();
 });
 
@@ -1353,7 +1386,6 @@ document.querySelectorAll('.profile-stat').forEach(function(el,i){
 // ===== SETTINGS FUNCTIONS =====
 const savedAvatar = localStorage.getItem('wte_avatar');
 const savedBg = localStorage.getItem('wte_bg');
-const savedNick = localStorage.getItem('wte_nickname');
 const expiryReminder = localStorage.getItem('wte_expiry_reminder') !== 'off';
 
 function loadProfileSettings(){
@@ -1495,11 +1527,12 @@ document.getElementById('reset-btn').addEventListener('click',function(){
   ingredients=[];mealRecords=[];likedRecipes=[];wantRecipes=[];hatedIngredients=[];
   localStorage.removeItem('wte_avatar');localStorage.removeItem('wte_bg');
   localStorage.removeItem('wte_nickname');localStorage.removeItem('wte_expiry_reminder');
+  localStorage.removeItem('wte_ingredients');localStorage.removeItem('wte_mealRecords');
   hideAvatar();
   document.getElementById('profile-header-bg').style.background='';
   const name=document.getElementById('pf-name').textContent;
     renderAllShelves();renderProfile();
-  alert('🔄 已重置所有数据');
+  alert('🔄 已重置所有数据，刷新后将回到登录页');
   document.getElementById('settings-overlay').classList.remove('open');
 });
 
