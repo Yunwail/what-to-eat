@@ -11,8 +11,8 @@
 <link rel="apple-touch-icon" href="icon-1024.png">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-*{margin:0;padding:0;box-sizing:border-box;-webkit-overflow-scrolling:touch}
-html,body{height:100dvh;overflow:hidden;overscroll-behavior:none}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100dvh;overflow:hidden;overscroll-behavior:none;-webkit-overflow-scrolling:touch}
 :root{--bg-page:#FAF6EE;--bg-phone:#FAF6EE;--bg-panel:#FFFFFF;--bg-cream:#FAF6EE;--bg-warm:#F3CEE2;--accent:#111111;--sage:#BACB9A;--pink:#F3CEE2;--yellow:#FCE291;--blue:#C5D5E6;--text-dark:#111111;--text-mid:#555555;--text-light:#999999;--divider:#F0EDEA;--white:#FFFFFF;--charcoal:#111111;--danger:#E8762D}
 body{background:#E8E0D0;display:flex;justify-content:center;align-items:center;height:100dvh;overflow:hidden;font-family:"Inter","PingFang SC","Helvetica Neue",sans-serif}
 .phone{width:100%;max-width:420px;height:100dvh;background:var(--bg-page);position:relative;display:flex;flex-direction:column;overflow:hidden;margin:0 auto}
@@ -84,8 +84,8 @@ body{background:#E8E0D0;display:flex;justify-content:center;align-items:center;h
 .r-card-match{font-size:10px;margin-top:6px;color:var(--charcoal);font-weight:600;background:var(--sage);padding:2px 10px;display:inline-block;border-radius:20px}
 .ing-selector{padding:3px 16px 2px;background:var(--white);flex-shrink:0;border-bottom:1px solid rgba(0,0,0,0.04)}
 .ing-selector .ing-count{font-size:11px;font-weight:600;color:var(--charcoal);margin-bottom:1px;display:flex;align-items:center;gap:4px;font-family:"Inter",sans-serif}
-.ing-grid{max-height:300px;overflow-y:auto;padding:1px 0}
-.ing-row{display:flex;gap:4px;overflow-x:auto;padding:2px 0 8px;scrollbar-width:thin}
+.ing-grid{max-height:300px;overflow-y:auto;padding:1px 0;overscroll-behavior:contain}
+.ing-row{display:flex;gap:4px;overflow-x:auto;padding:2px 0 8px;scrollbar-width:thin;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
 .ing-row .ing-chip{flex-shrink:0}
 .ing-category{margin-bottom:4px}
 .ing-cat-label{font-size:9px;font-weight:600;color:var(--text-light);padding:2px 0;margin-bottom:3px;font-family:"Inter",sans-serif;letter-spacing:1px;text-transform:uppercase}
@@ -142,7 +142,7 @@ body{background:#E8E0D0;display:flex;justify-content:center;align-items:center;h
 .subcat-group.expanded .subcat-label::after{transform:translateY(-50%) rotate(90deg)}
 .subcat-group{overflow:hidden}
 .subcat-items{max-height:0;overflow:hidden;transition:max-height 0.35s cubic-bezier(0.4,0,0.2,1),opacity 0.25s ease;opacity:0;padding:0 2px}
-.subcat-group.expanded .subcat-items{max-height:120px;opacity:1;display:flex;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;gap:8px;padding:4px 2px 8px;scrollbar-width:thin;scrollbar-color:var(--divider) transparent}
+.subcat-group.expanded .subcat-items{max-height:120px;opacity:1;display:flex;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;gap:8px;padding:4px 2px 8px;scrollbar-width:thin;scrollbar-color:var(--divider) transparent;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
 .subcat-group.expanded .food-grid-item,.subcat-group.expanded .ing-chip{flex-shrink:0}
 /* Toggle-all button */
 .toggle-all-wrap{display:flex;align-items:center;gap:6px;margin:2px 0 1px}
@@ -346,7 +346,7 @@ body{background:#E8E0D0;display:flex;justify-content:center;align-items:center;h
 .hs-confirm:active{transform:scale(0.97)}
 
 /* Cuisine filter */
-.cuisine-filter{display:flex;gap:5px;padding:8px 12px 6px;background:var(--white);flex-shrink:0;overflow-x:auto;border-top:1px solid var(--divider);white-space:nowrap;scrollbar-width:none}
+.cuisine-filter{display:flex;gap:5px;padding:8px 12px 6px;background:var(--white);flex-shrink:0;overflow-x:auto;border-top:1px solid var(--divider);white-space:nowrap;scrollbar-width:none;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
 .cuisine-filter::-webkit-scrollbar{display:none}
 .cf-item{font-size:10px;font-weight:600;padding:5px 12px;background:var(--bg-page);border:1px solid var(--divider);cursor:pointer;border-radius:20px;color:var(--text-mid);transition:all 0.1s;user-select:none}
 .cf-item:active{transform:scale(0.95)}
@@ -1278,10 +1278,9 @@ function updateProfile(){
 
 // LOGIN
 const savedNick = localStorage.getItem('wte_nickname');
-const savedHasData = localStorage.getItem('wte_ingredients');
 
-// Auto-login if returning user
-if(savedNick && savedHasData){
+// Auto-login if returning user (has a saved nickname)
+if(savedNick){
   loadSavedData();
   document.getElementById('screen-login').classList.add('hidden');
   document.getElementById('screen-home').classList.add('active');
@@ -1290,6 +1289,7 @@ if(savedNick && savedHasData){
   loggedIn=true;
   document.getElementById('pf-name').textContent=savedNick;
   currentScreen='screen-home';
+  saveData();
   loadProfileSettings();
   renderAllShelves();
 }
@@ -1306,6 +1306,7 @@ document.getElementById('login-btn').addEventListener('click',function(){
   document.getElementById('pf-name').textContent=name;
     currentScreen='screen-home';
   loadSavedData();
+  saveData();
   renderAllShelves();
 });
 
