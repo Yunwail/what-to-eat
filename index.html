@@ -142,9 +142,9 @@ body{background:#E8E0D0;display:flex;justify-content:center;align-items:center;h
 .subcat-group.expanded .subcat-label::after{transform:translateY(-50%) rotate(90deg)}
 .subcat-group{overflow:visible;margin-bottom:2px}
 .subcat-items{max-height:0;overflow:hidden;transition:max-height 0.35s cubic-bezier(0.4,0,0.2,1),opacity 0.25s ease;opacity:0;padding:0 2px}
-.subcat-group.expanded .subcat-items{max-height:none;opacity:1;display:block;white-space:nowrap;overflow-x:scroll;overflow-y:hidden;-webkit-overflow-scrolling:touch;padding:10px 4px 12px;scrollbar-width:thin;scrollbar-color:var(--divider) transparent}
-.subcat-group.expanded .food-grid-item{display:inline-flex;flex-shrink:0;white-space:normal;vertical-align:top}
-.subcat-group.expanded .ing-chip{display:inline-flex;flex-shrink:0;white-space:normal;vertical-align:top}
+.subcat-group.expanded .subcat-items{max-height:none;opacity:1;display:flex;flex-wrap:nowrap;overflow-x:scroll;overflow-y:hidden;padding:10px 4px 12px;gap:6px;scrollbar-width:thin;min-width:min-content;scrollbar-color:var(--divider) transparent}
+.subcat-group.expanded .food-grid-item{flex-shrink:0;white-space:normal}
+.subcat-group.expanded .ing-chip{flex-shrink:0;white-space:normal}
 /* Toggle-all button */
 .toggle-all-wrap{display:flex;align-items:center;gap:6px;margin:2px 0 1px}
 .toggle-all-btn{padding:4px 14px;font-size:10px;font-weight:600;border:1px solid var(--divider);background:var(--white);color:var(--charcoal);cursor:pointer;border-radius:20px;font-family:"Inter",sans-serif;transition:all 0.15s;line-height:1.6}
