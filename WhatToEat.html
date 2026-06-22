@@ -140,9 +140,9 @@ body{background:#E8E0D0;display:flex;justify-content:center;align-items:center;h
 .subcat-label{display:flex;align-items:center;font-size:10px;font-weight:600;color:var(--text-mid);padding:3px 0 3px 8px;margin:4px 0 3px;border-left:4px solid var(--subcat-color,#999);font-family:"Inter",sans-serif;letter-spacing:0.5px;cursor:pointer;user-select:none;padding-right:20px;position:relative}
 .subcat-label::after{content:'▶';position:absolute;right:6px;top:50%;transform:translateY(-50%);font-size:7px;color:var(--text-light);transition:transform 0.25s ease}
 .subcat-group.expanded .subcat-label::after{transform:translateY(-50%) rotate(90deg)}
-.subcat-group{overflow:hidden}
+.subcat-group{overflow:visible}
 .subcat-items{max-height:0;overflow:hidden;transition:max-height 0.35s cubic-bezier(0.4,0,0.2,1),opacity 0.25s ease;opacity:0;padding:0 2px}
-.subcat-group.expanded .subcat-items{max-height:120px;opacity:1;display:flex;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;gap:8px;padding:4px 2px 8px;scrollbar-width:thin;scrollbar-color:var(--divider) transparent;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+.subcat-group.expanded .subcat-items{max-height:none;opacity:1;display:flex;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;gap:10px;padding:6px 4px 12px;scrollbar-width:thin;scrollbar-color:var(--divider) transparent;overscroll-behavior:none}
 .subcat-group.expanded .food-grid-item,.subcat-group.expanded .ing-chip{flex-shrink:0}
 /* Toggle-all button */
 .toggle-all-wrap{display:flex;align-items:center;gap:6px;margin:2px 0 1px}
